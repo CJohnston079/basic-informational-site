@@ -1,28 +1,23 @@
-const http = require("http");
-const fs = require("fs");
+const express = require("express");
+const path = require("path");
+const app = express();
 
-const server = http.createServer((req, res) => {
-	const fileName = req.url.replace(/\//g, "") || "index";
-	const filePath = `./${fileName}.html`;
-
-	fs.readFile(filePath, (err, data) => {
-		if (err) {
-			fs.readFile("./404.html", (err, data) => {
-				if (err) {
-					res.writeHead(404, { "Content-Type": "text/plain" });
-					res.end("404 Not Found");
-				} else {
-					res.writeHead(404, { "Content-Type": "text/html" });
-					res.end(data);
-				}
-			});
-		} else {
-			res.writeHead(200, { "Content-Type": "text/html" });
-			res.end(data);
-		}
-	});
+app.get("/", (req, res) => {
+	res.sendFile(path.join(__dirname, "index.html"));
 });
 
-const PORT = 8080;
+app.get("/about", (req, res) => {
+	res.sendFile(path.join(__dirname, "about.html"));
+});
 
-server.listen(PORT);
+app.get("/contact", (req, res) => {
+	res.sendFile(path.join(__dirname, "contact.html"));
+});
+
+app.get("/*", (req, res) => {
+	res.sendFile(path.join(__dirname, "404.html"));
+});
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT);
